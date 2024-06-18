@@ -1,0 +1,29 @@
+{
+  "name": "桌面工具箱",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "vite": "cd ./vue-tools-box &&  npm run dev ",
+    "electron": "wait-on http://localhost:3033 && cross-env PORT=3033  electron . ",
+    "dev": "concurrently  -r \"npm run vite\" \" chcp 65001 && npm run electron\"  ",
+    "postinstall": "node node_modules/electron/install.js"
+  },
+  "keywords": [],
+  "author": "xieyi",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^31.0.1",
+    "primevue": "^3.52.0"
+  },
+  "config": {
+    "electron": {
+      "mirror": "https://registry.npmmirror.com/-/binary/electron/"
+    }
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "wait-on": "^7.2.0"
+  }
+}
