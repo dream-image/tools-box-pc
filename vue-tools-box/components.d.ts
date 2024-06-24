@@ -8,8 +8,15 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
+    FileUpload: typeof import('primevue/fileupload')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
     Home: typeof import('./src/components/Home.vue')['default']
     InputText: typeof import('primevue/inputtext')['default']
+    OCR: typeof import('./src/components/OCR/index.vue')['default']
+    ProgressBar: typeof import('primevue/progressbar')['default']
+    Qrcode: typeof import('./src/components/Qrcode/index.vue')['default']
+    SelectButton: typeof import('primevue/selectbutton')['default']
+    Textarea: typeof import('primevue/textarea')['default']
+    Toast: typeof import('primevue/toast')['default']
   }
 }

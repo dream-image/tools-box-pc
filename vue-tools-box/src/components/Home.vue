@@ -1,23 +1,30 @@
 <script setup lang="ts">
 import { Ref, ref } from 'vue'
-import Button from 'primevue/button'
+
 import PanelMenu, { PanelMenuProps } from 'primevue/panelmenu';
 import Card from 'primevue/card';
-import VueQr from 'vue-qr/src/packages/vue-qr.vue'
-import qrBg from '../assets/illust_94819771_20220527_012550.png'
-const currentKey = ref()
+import Qrcode from '@/components/Qrcode/index.vue'
+import { flatMap } from 'lodash-es'
+import { watch } from 'vue';
+import type { Component } from 'vue';
+import { shallowRef } from 'vue';
+import Ocr from '@/components/OCR/index.vue'
+const currentKey = ref<string>('')
 const menuRef = ref<typeof Card>(null)
-const qrcode = ref()
-const qrText = ref()
-const menuItems: Ref<PanelMenuProps['model']> = ref([
+type MenuProps = Required<PanelMenuProps>['model']
+const title = ref('')
+const currentComponent = shallowRef<{
+  component: Component | undefined,
+  props?: {
+    [k: string]: any
+  }
+
+}>()
+const menuItems = ref<MenuProps>([
   {
     key: '0',
     label: '文档处理',
     icon: "pi pi-file",
-    command: (e) => {
-      console.log(e.item, e.originalEvent);
-
-    },
     items: [
       {
         key: '0_0',
@@ -27,11 +34,16 @@ const menuItems: Ref<PanelMenuProps['model']> = ref([
           {
             key: '0_0_0',
             label: 'PDF转Word',
-
+            command: (e) => {
+              currentKey.value = e.item.key ?? ''
+            }
           },
           {
             key: '0_0_1',
-            label: 'PDF转图片'
+            label: 'PDF转图片',
+            command: (e) => {
+              currentKey.value = e.item.key ?? ''
+            }
           }
         ],
       },
@@ -42,11 +54,17 @@ const menuItems: Ref<PanelMenuProps['model']> = ref([
         items: [
           {
             key: '0_1_0',
-            label: 'Word转PDF'
+            label: 'Word转PDF',
+            command: (e) => {
+              currentKey.value = e.item.key ?? ''
+            }
           },
           {
             key: '0_1_1',
-            label: 'Word转图片'
+            label: 'Word转图片',
+            command: (e) => {
+              currentKey.value = e.item.key ?? ''
+            }
           }
         ]
       }
@@ -59,25 +77,70 @@ const menuItems: Ref<PanelMenuProps['model']> = ref([
     items: [
       {
         key: '1_0',
-        label: '图片压缩'
+        label: '图片压缩',
+        command: (e) => {
+          currentKey.value = e.item.key ?? ''
+          title.value = e.item.label as string ?? ''
+          currentComponent.value = {
+            component: undefined,
+          }
+        }
       },
       {
         key: '1_1',
         label: '图片格式转换',
+        command: (e) => {
+          currentKey.value = e.item.key ?? ''
+          title.value = e.item.label as string ?? ''
+          currentComponent.value = {
+            component: undefined,
+          }
+        }
       },
       {
         key: '1_2',
         label: 'GIF转图片',
+        command: (e) => {
+          currentKey.value = e.item.key ?? ''
+          title.value = e.item.label as string ?? ''
+          currentComponent.value = {
+            component: undefined,
+          }
+        }
       },
       {
         key: '1_3',
-        label: '视频转GIF'
+        label: '视频转GIF',
+        command: (e) => {
+          currentKey.value = e.item.key ?? ''
+          title.value = e.item.label as string ?? ''
+          currentComponent.value = {
+            component: undefined,
+          }
+        }
       },
       {
         key: '1_4',
-        label: '视频处理'
+        label: '视频处理',
+        command: (e) => {
+          currentKey.value = e.item.key ?? ''
+          title.value = e.item.label as string ?? ''
+          currentComponent.value = {
+            component: undefined,
+          }
+        }
       },
-
+      {
+        key: '1_5',
+        label: '图片OCR识别',
+        command: (e) => {
+          currentKey.value = e.item.key ?? ''
+          title.value = e.item.label as string ?? ''
+          currentComponent.value = {
+            component: Ocr,
+          }
+        }
+      },
     ]
   },
   {
@@ -85,7 +148,11 @@ const menuItems: Ref<PanelMenuProps['model']> = ref([
     label: '二维码生成器',
     icon: 'pi pi-qrcode',
     command: (e) => {
-      currentKey.value = e.item.key
+      currentKey.value = e.item.key ?? ''
+      title.value = e.item.label as string ?? ''
+      currentComponent.value = {
+        component: Qrcode,
+      }
     }
   }
 ])
@@ -104,27 +171,12 @@ const menuItems: Ref<PanelMenuProps['model']> = ref([
     </Card>
     <Card :style="{ width: `calc(100vw - 8px - ${menuRef?.getBoundingClientRect()?.width ?? 0}px)` }">
       <template #title>
-        <span v-if="currentKey === '2'">
-          二维码生成器
+        <span>
+          {{ title }}
         </span>
-
       </template>
       <template #content>
-        <div v-if="currentKey === '2'" class="qrcodeWrapper">
-          <div style="display: flex;gap: 10px;">
-            <Button label="生成二维码" severity="secondary" @click="() => {
-              qrText = qrcode
-            }" />
-            <FloatLabel>
-              <InputText id="username" style="min-width: 300px;" v-model="qrcode" />
-              <label for="username">请输入内容</label>
-            </FloatLabel>
-          </div>
-
-          <div v-if="qrText">
-            <vue-qr :text="qrText" :bgSrc="qrBg" :size="300" :dotScale="0.5"></vue-qr>
-          </div>
-        </div>
+        <component :is="currentComponent?.component" v-bind="{ ...currentComponent?.props }"></component>
       </template>
     </Card>
   </div>
